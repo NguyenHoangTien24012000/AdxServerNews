@@ -1,125 +1,102 @@
 
 const connection = require('../services/connectDB')
 
-class QueryBuilder {
-    constructor() {
-        this.table = this.name ? this.name : this.constructor.name;
-        this.condition = '';
-        this.key = '';
-        this.strPDO = ''
-        this.strWhere = ''
-    }
 
-    select(fields) {
-        this.fields = fields;
-        return this
-    }
+class QueryBuilder{
 
-    getAll() {
-        this.query = `SELECT ${this.fields} FROM ${this.table} `
-        console.log(this.query)
-        return connection.execute(this.query);
+    constructor(){
+        this.condition='';
+        this.fields='*';
+        this.args=[];
+        this.argswhere=[];
+        this.table=this.table?this.table:this.constructor.name;
     }
-
-    getAllCondition(){
-        this.query = `SELECT ${this.fields} FROM ${this.table} ${this.condition}`
-        console.log(this.query)
-        return connection.execute(this.query);
+    reset(){
+        this.condition='';
+        this.fields='*';
+        this.args=[];
+        this.argswhere=[];
     }
-
-    getOne(value) {
-        this.query = `SELECT ${this.fields} FROM ${this.table} ${this.condition}`
-        console.log(this.query)
-        return connection.execute(this.query, [value])
-    }
-
-    getGroup(group) {
-        this.condition = `GROUP BY ${group}`
-        return this
-    }
-
-    stringPDO(arrKey) {
-        let length = arrKey.length
-        let space = ','
-        for (let i = 0; i < length; i++) {
-            if (i == length - 1) {
-                space = ''
-            }
-            this.strPDO += `${arrKey[i]} = ? ${space}`
-        }
-        return this.strPDO;
-    }
-
-    whereCondition(obj, operator){
-        let arrKey = []
-        let arrValue = []
-        for (const key in obj) {
-            arrKey.push(key)
-            arrValue.push(obj[key])
-        }
-        let space = operator ? operator : ','
-        let length = arrKey.length
-        for (let i = 0; i < length; i++) {
-            if (i == length - 1) {
-                space = ''
-            }
-            this.strWhere += `${arrKey[i]} = ? ${space}`
-        }
-    }
-
-    where() {
-        this.condition = `WHERE ${this.strWhere}`
+    select(fields){
+        this.fields=fields;
         return this;
     }
-
-    update(obj, value, image) {
-        let arrKey = []
-        let arrValue = []
-        for (const key in obj) {
-            arrKey.push(key)
-            arrValue.push(obj[key])
+    get(){
+        //ASC, DESC
+        let sql=` SELECT ${this.fields} FROM ${this.table} ${this.condition}`;
+     
+        let data = this.argswhere
+        if(this.argswhere.length === 0 ){
+            this.reset();
+            return connection.execute(sql)
         }
-        if (image) {
-            arrKey = [...arrKey, 'image']
-            this.query = `UPDATE ${this.table} SET ${this.stringPDO(arrKey)} ${this.condition}`
-            return connection.execute(this.query, [...arrValue, image, value])
-        }
-        this.query = `UPDATE ${this.table} SET ${this.stringPDO(arrKey)} ${this.condition}`
-        console.log(this.query)
-        return connection.execute(this.query, [...arrValue, value])
+        // console.log(sql, data)
+        this.reset()
+        return connection.execute(sql, [...data])
     }
 
-    insertObj(obj, image) {
-        let arrKey = []
-        let arrValue = []
-        for (const key in obj) {
-            arrKey.push(key)
-            arrValue.push(obj[key])
-        }
-        arrKey = [...arrKey, 'image']
-        // arrValue = [...arrValue, image]
-        let stringInsert = ''
-        let space = ','
-        let length = arrKey.length;
-        for (let i = 0; i < length; i++) {
-            if (i === length - 1) {
-                space = ''
-            }
-            stringInsert += `? ${space}`
-        }
-        this.query = `INSERT INTO ${this.table} (${arrKey}) VALUES (${stringInsert})`
-        console.log(this.query)
-        return connection.execute(this.query, [...arrValue, image])
+    group(key){
+        this.condition += `GROUP BY ${key}`
+        return this
     }
 
-    insertDemo(key, value) {
-        this.query = `INSERT INTO ${this.table} (${key}) VALUES (?)`
-        return connection.execute(this.query, [value])
+    where(key,operator,value){
+        this.condition+=this.condition==''?` WHERE ${key} ${operator} ? `: ` AND ${key} ${operator} ? `;
+        this.argswhere.push(value);
+        return this;
+    }
+    whereor(key,operator,value){
+        this.condition+=` OR ${key} ${operator} ? `;
+        this.argswhere.push(value);
+        return this;
+    }
+    
+    wherenot(key, operator, value){
+        this.condition += `NOT ${key} ${operator} ?`
+        this.argswhere.push(value)
+        return this
     }
 
-    delete(id) {
-        this.query = `DELETE FROM ${this.table} ${this.condition}`
-        return connection.execute(this.query, [id])
+    update(obj){
+        
+        let strkey='';
+        for(let key in obj){
+            strkey+= ` ${key} = ?,`
+            this.args.push(obj[key]);
+        }
+        strkey=(strkey.slice(0,strkey.length-1));
+        let sql = `UPDATE ${this.table} SET ${strkey} ${this.condition}`;
+        let data = this.args
+        let dataWhere = this.argswhere
+        this.reset();
+        // console.log(sql, data, dataWhere)
+        return connection.execute(sql, [...data,...dataWhere])
+    }
+    insert(obj){
+        let strKey = ''
+        let strQuestion = ''
+        for(let key in obj){
+            strKey += ` ${key},`
+            strQuestion += ' ?,' 
+            this.args.push(obj[key])
+        }
+        strKey = (strKey.slice(0, strKey.length-1))
+        strQuestion = (strQuestion.slice(0, strQuestion.length-1))
+        let sql = `INSERT INTO ${this.table} (${strKey}) VALUES (${strQuestion})`
+        let data = this.args 
+        this.reset()
+        // console.log(sql, data)
+        return connection.execute(sql,[data])
+
+    }   
+    delete(){
+        let sql = `DELETE FROM ${this.table} ${this.condition}`;
+        // console.log(sql)
+        // return sql;
+        let dataWhere = this.argswhere
+        this.reset()
+        // console.log(sql, dataWhere)
+       return connection.execute(sql,dataWhere)
     }
 }
 

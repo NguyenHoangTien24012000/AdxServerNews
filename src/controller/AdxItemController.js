@@ -1,12 +1,12 @@
-const connection = require('../services/connectDB');
-const DOMAIN = require('../services/constant');
 const queryAdxDemo = require('../config/modelAdxDemoQuery');
+const configNameImage = require('../config/configNameImage')
 class AdxItemController {
     getItemGroup = async (req, res) => {
         let { idGroup } = req.params;
         // console.log(req.params)
         try {
-            const [rows, fields] = await queryAdxDemo.select('*').where('id_type_adx').getOne(idGroup)
+           
+            const [rows, fields] = await queryAdxDemo.where('id_type_adx', '=', idGroup).get()
             // res.send(rows);
             return res.status(200).json({
                 message: 'ok',
@@ -21,7 +21,8 @@ class AdxItemController {
     getItemDetail = async (req, res) => {
         let { idItem } = req.params;
         try {
-            const [rows, fields] = await queryAdxDemo.select('*').where('id_item').getOne(idItem)
+           
+            const [rows, fields] = await queryAdxDemo.where('id_item', '=', idItem).get()
 
             return res.status(200).json({
                 message: 'ok',
@@ -35,21 +36,16 @@ class AdxItemController {
     }
     updateItemDetail = async (req, res) => {
         let { link_button1, link_button2, name_demo, id_demo } = req.body;
-        let image;
-        if (!req.file) {
-            image = req.body.image
-        } else {
-            const a = (req.file.path.split('\\').splice(2).toString())
-            image = `${DOMAIN.DOMAINIMG}/${a}`;
-        }
+        let image = configNameImage(req);
 
         if (!link_button1 || !link_button2 || !name_demo || !id_demo) {
             return res.status(401).json({
                 message: 'missing required params',
             })
         }
-
-        const [rows, fields] = await queryAdxDemo.where('id_demo').update(req.body, id_demo, image)
+        let obj = {...req.body, image}
+        
+        const [rows, fields] = await queryAdxDemo.where('id_demo', '=', id_demo).update(obj)
         
       
         if (rows.affectedRows === 1) {

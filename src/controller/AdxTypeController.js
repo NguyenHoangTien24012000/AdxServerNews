@@ -1,12 +1,11 @@
-const connection = require('../services/connectDB')
-const DOMAIN = require('../services/constant')
 const queryAdx = require('../config/modelAdxQuery')
 const queryAdxDemo = require('../config/modelAdxDemoQuery')
+const configNameImage = require('../config/configNameImage')
 class AdxTypeController {
     getAdxType = async (req, res) => {
         let { id_adx } = req.params;
 
-        const [rows] = await queryAdx.select('*').where('id_adx').getOne(id_adx)
+        const [rows] = await queryAdx.where('id_adx', '=', id_adx).get()
 
         if (rows.length === 0) {
             return res.status(401).json({
@@ -19,7 +18,7 @@ class AdxTypeController {
         })
     }
     getAllAdxType = async (req, res) => {
-        const [rows, fields] = await queryAdx.select('*').getAll();
+        const [rows, fields] = await queryAdx.get();
         if (rows.length === 0) {
             return res.status(401).json({
                 message: 'data does not exist'
@@ -32,21 +31,15 @@ class AdxTypeController {
     }
     updateAdxType = async (req, res) => {
         let { id_adx, name_adx, name_demo, size, posti, detail, type_screen } = req.body;
-        let image = 'default';
-        if (!req.file) {
-            image = req.body.image
-        } else {
-            const a = (req.file.path.split('\\').splice(2).toString())
-            image = `${DOMAIN.DOMAINIMG}/${a}`;
-        }
+        let image = configNameImage(req);
 
         if (!id_adx || !name_adx || !size || !posti || !detail || !name_adx || !name_demo || !type_screen) {
             return res.status(401).json({
                 message: 'missing required params',
             })
         }
-
-        const [rows, fields] = await queryAdx.where('id_adx').update(req.body, id_adx, image)
+        let obj = {...req.body, image}
+        const [rows, fields] = await queryAdx.where('id_adx', '=', id_adx).update(obj)
 
         if (rows.affectedRows === 1) {
             return res.status(200).json({
@@ -60,8 +53,8 @@ class AdxTypeController {
     }
     getGroupAdxType = async (req, res) => {
         let { groupType } = req.params;
-
-        const [rows, fields] = await queryAdx.where('type_adx').select('*').getOne(groupType)
+        // console.log(groupType)
+        const [rows, fields] = await queryAdx.where('type_adx', '=', groupType).get()
 
         if (rows.length === 0) {
             return res.status(401).json({
@@ -74,8 +67,9 @@ class AdxTypeController {
         })
     }
     getAllGroupAdxType = async (req, res) => {
+        
 
-        const [rows, fields] = await queryAdx.select('type_adx, COUNT(*)').getGroup('type_adx').getAllCondition()
+        const [rows, fields] = await queryAdx.select('type_adx, COUNT(*)').group('type_adx').get()
       
         if (rows.length === 0) {
             return res.status(401).json({
@@ -109,8 +103,10 @@ class AdxTypeController {
                 message: 'missing required params',
             })
         }
-
-        const [rows, fields] = await queryAdx.insertObj(req.body, image)
+        let obj = {...req.body, image}
+        
+        
+        const [rows, fields] = await queryAdx.insert(obj)
 
         let id_type_adx = rows.insertId
 
@@ -125,7 +121,8 @@ class AdxTypeController {
 
     deleteAdxType = async (req, res) => {
         let { id_adx } = req.params;
-        const [rows, fields] = await queryAdx.where('id_adx').delete(id_adx)
+       
+        const [rows, fields] = await  queryAdx.where('id_adx', '=', id_adx).delete()
       
         if (rows.affectedRows === 0) {
             return res.status(401).json({
