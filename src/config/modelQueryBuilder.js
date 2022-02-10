@@ -86,7 +86,7 @@ class QueryBuilder{
         let data = this.args 
         this.reset()
         // console.log(sql, data)
-        return connection.execute(sql,[data])
+        return connection.execute(sql, [...data])
 
     }   
     delete(){

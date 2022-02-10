@@ -1,15 +1,29 @@
 const { make } = require('../services/JWT')
 const queryUser = require('../config/modelUserQuery')
 const bcrypt = require('bcrypt')
+const validator = require('../config/modelValidation')
 class UserAdminController {
     checkLogin = async (req, res) => {
 
         let data = req.body;
         let { email, password_login } = data;
 
-        if (!email || !password_login) {
-            return res.status(401).json({
-                message: 'missing required params',
+        const validationRule = {
+            "email": "required|email",
+            "password_login": "required|string",
+        }
+        let errorValidate = false
+        let dataError
+        validator(req.body, validationRule, {}, (err, status) => {
+            errorValidate = status
+            dataError = err
+
+        });
+        if (!errorValidate) {
+            return res.status(404).json({
+                success: false,
+                message: 'Validation failed',
+                data: dataError
             })
         }
 
@@ -30,34 +44,47 @@ class UserAdminController {
                     token: _token,
                     message: 'ok'
                 })
-            }else{
+            } else {
                 return res.status(401).send({
-                    message:'Password invalid!!'
+                    message: 'Password invalid!!'
                 })
             }
         }
     }
-    changeUser = async (req,res) =>{
+    changeUser = async (req, res) => {
         let data = req.body;
         let { email, password_login } = data;
 
-        if (!email || !password_login) {
-            return res.status(401).json({
-                message: 'missing required params',
+        const validationRule = {
+            "email": "required|email",
+            "password_login": "required|string",
+        }
+        let errorValidate = false
+        let dataError
+        validator(req.body, validationRule, {}, (err, status) => {
+            errorValidate = status
+            dataError = err
+
+        });
+        if (!errorValidate) {
+            return res.status(404).json({
+                success: false,
+                message: 'Validation failed',
+                data: dataError
             })
         }
 
         let hashedPass = await bcrypt.hash(password_login, 10)
         password_login = hashedPass
 
-        const [rows, fields] = await queryUser.where('id_user', '=', 1).update({email,password_login})
+        const [rows, fields] = await queryUser.where('id_user', '=', 1).update({ email, password_login })
         if (rows.affectedRows === 1) {
             return res.status(200).json({
                 message: 'ok'
             })
-        }else{
+        } else {
             return res.status(401).json({
-                message:'error'
+                message: 'error'
             })
         }
     }
