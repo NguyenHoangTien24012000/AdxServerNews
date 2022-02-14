@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
 const PORT = 5000;
-const initWebRoute = require('./routes/index.route')
-const authMiddleWare = require('./services/authMiddleWare');
-const userLoginRouter = require('./routes/loginIndex.route');
-const adminRouter = require('./routes/adminEditAdx');
+const initWebRoute = require('./src/routes/index.route')
+const authMiddleWare = require('./src/services/authMiddleWare');
+const userLoginRouter = require('./src/routes/loginIndex.route');
+const adminRouter = require('./src/routes/adminEditAdx');
 
 
 //config server
