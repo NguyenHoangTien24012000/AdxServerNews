@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-// const PORT = 5000;
+const PORT = 5000;
 const initWebRoute = require('./src/routes/index.route')
 const authMiddleWare = require('./src/services/authMiddleWare');
 const userLoginRouter = require('./src/routes/loginIndex.route');
@@ -18,7 +18,7 @@ app.use(function (req, res, next) {
 });
 
 //uploadFile
-app.use('/imageAdx', express.static('src/public'));
+app.use('/imageAdx',express.static('src/public'));
 
 //Access token;
 userLoginRouter(app);
@@ -34,7 +34,7 @@ adminRouter(app);
 //     return res.status(404).send('<h2>Page Not Found</h2>')
 // })
 
-app.listen(process.env.PORT || 3000, function () {
-    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
-});
+app.listen(process.env.PORT || PORT, () => {
+    console.log(`Example app listening at http://localhost:${PORT}`)
+})
 
