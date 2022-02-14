@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 5000;
+const PORT = 5000;
 const initWebRoute = require('./routes/index.route')
 const authMiddleWare = require('./services/authMiddleWare');
 const userLoginRouter = require('./routes/loginIndex.route');
@@ -34,7 +34,7 @@ adminRouter(app);
 //     return res.status(404).send('<h2>Page Not Found</h2>')
 // })
 
-app.listen(port, () => {
+app.listen(process.env.PORT || PORT, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
 

@@ -1,6 +1,5 @@
 const connection = require('../services/connectDB');
 const queryAdxContact = require('../config/modelAdxContactQuery')
-// const validate = require('../config/modelValidation')
 const validator = require('../config/modelValidation');
 
 class AdxContactController {
