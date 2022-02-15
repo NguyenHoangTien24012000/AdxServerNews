@@ -29,12 +29,6 @@ app.use(authMiddleWare)
 
 adminRouter(app);
 
-//handle 404 not found
-// app.use((req, res) => {
-//     return res.status(404).send('<h2>Page Not Found</h2>')
-// })
-
 app.listen(process.env.PORT || PORT, () => {
     console.log(`Example app listening at http://localhost:${PORT}`)
 })
-
