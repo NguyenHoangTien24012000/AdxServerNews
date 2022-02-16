@@ -5,16 +5,15 @@ const initWebRoute = require('./src/routes/index.route')
 const authMiddleWare = require('./src/services/authMiddleWare');
 const userLoginRouter = require('./src/routes/loginIndex.route');
 const adminRouter = require('./src/routes/adminEditAdx');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-
-
-// config domain 
-app.use('/', createProxyMiddleware({ target: 'http://localhost:3000', changeOrigin: true }));
 
 //config server
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
+
+//config domain
+// const { createProxyMiddleware } = require('http-proxy-middleware');
+// app.use('/api', createProxyMiddleware({ target: 'http://localhost:2000', changeOrigin: true }));
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -23,8 +22,8 @@ app.use(function (req, res, next) {
     next();
 });
 
-//uploadFile
-app.use('/imageAdx',express.static('src/public'));
+//getFile Image
+app.use('/imageAdx', express.static('src/public'));
 
 //Access token;
 userLoginRouter(app);
