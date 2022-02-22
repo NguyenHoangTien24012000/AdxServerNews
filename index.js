@@ -5,6 +5,13 @@ const initWebRoute = require('./src/routes/index.route')
 const authMiddleWare = require('./src/services/authMiddleWare');
 const userLoginRouter = require('./src/routes/loginIndex.route');
 const adminRouter = require('./src/routes/adminEditAdx');
+require("dotenv").config();
+
+var corsOptions = {
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:8081"
+};
+
+app.use(cors(corsOptions));
 
 //config server
 app.use(express.urlencoded({ extended: true }));
@@ -34,6 +41,15 @@ app.use(authMiddleWare)
 
 adminRouter(app);
 
+
+
+
+// set port, listen for requests
+const PORT = process.env.NODE_DOCKER_PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`Example app listening at http://localhost:${PORT}`)
-})
+    console.log(`Server is running on port ${PORT}.`);
+});
+
+// app.listen(PORT, () => {
+//     console.log(`Example app listening at http://localhost:${PORT}`)
+// })

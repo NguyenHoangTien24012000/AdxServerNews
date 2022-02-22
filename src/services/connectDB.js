@@ -4,8 +4,8 @@ const mysql = require('mysql2/promise');
 const connection = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  database: 'data|_adx',
-  // password: 'hoangtien14'
+  database: 'sys',
+  password: '123456'
 });
 
 module.exports = connection;
