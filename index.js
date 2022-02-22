@@ -1,19 +1,14 @@
 const express = require('express');
 const app = express();
-const PORT = 5000;
 const initWebRoute = require('./src/routes/index.route')
 const authMiddleWare = require('./src/services/authMiddleWare');
 const userLoginRouter = require('./src/routes/loginIndex.route');
 const adminRouter = require('./src/routes/adminEditAdx');
-require("dotenv").config();
 
-var corsOptions = {
-    origin: process.env.CLIENT_ORIGIN || "http://localhost:8081"
-};
+app.get("/", (req,res) =>{
+    res.send("<h2>alo 6 21</h2>")
+})
 
-app.use(cors(corsOptions));
-
-//config server
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
@@ -32,24 +27,17 @@ app.use(function (req, res, next) {
 //getFile Image
 app.use('/imageAdx', express.static('src/public'));
 
+initWebRoute(app);
+
 //Access token;
 userLoginRouter(app);
-
-initWebRoute(app);
 
 app.use(authMiddleWare)
 
 adminRouter(app);
 
+const PORT = process.env.PORT || 5000;
 
-
-
-// set port, listen for requests
-const PORT = process.env.NODE_DOCKER_PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`);
-});
-
-// app.listen(PORT, () => {
-//     console.log(`Example app listening at http://localhost:${PORT}`)
-// })
+    console.log(`Example app listening at http://localhost:${PORT}`)
+})
