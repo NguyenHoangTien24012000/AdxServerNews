@@ -4,6 +4,8 @@ const initWebRoute = require('./src/routes/index.route')
 const authMiddleWare = require('./src/services/authMiddleWare');
 const userLoginRouter = require('./src/routes/loginIndex.route');
 const adminRouter = require('./src/routes/adminEditAdx');
+const connection = require('./src/services/connectDB')
+
 
 app.get("/", (req,res) =>{
     res.send("<h2>alo 6 21</h2>")
