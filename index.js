@@ -8,7 +8,8 @@ const connection = require('./src/services/connectDB')
 
 
 app.get("/", (req,res) =>{
-    res.send("<h2>alo 6 21</h2>")
+    console.log(process.env)
+    res.send("<h2>alo 7 21</h2>")
 })
 
 app.use(express.urlencoded({ extended: true }));
@@ -42,4 +43,10 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
     console.log(`Example app listening at http://localhost:${PORT}`)
+})
+
+process.on('uncaughtException', function(){
+    console.log(err);
+    //Send some notification about the error  
+    process.exit(1);
 })
