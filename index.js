@@ -45,8 +45,4 @@ app.listen(PORT, () => {
     console.log(`Example app listening at http://localhost:${PORT}`)
 })
 
-process.on('uncaughtException', function(){
-    console.log(err);
-    //Send some notification about the error  
-    process.exit(1);
-})
+

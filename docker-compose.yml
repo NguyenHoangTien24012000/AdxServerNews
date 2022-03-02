@@ -19,6 +19,7 @@ services:
       - mysql:/data/db
 volumes:
   mysql:
+    drive:local
   # db:
   #   image: mysql
   #   environment:
