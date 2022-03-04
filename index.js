@@ -8,18 +8,7 @@ const connection = require('./src/services/connectDB')
 const keys = require('./key')
 
 app.get("/", async (req, res) => {
-    try {
-        console.log(keys)
-        const [rows, fields] = await connection.execute(`SELECT * FROM contact_link`)
-        return res.status(200).json({
-            message: 'ok',
-            data: rows
-        })
-    } catch (error) {
-        return res.status(401).json({
-            message: 'error 1'
-        })
-    }
+    return res.send("<h1>ok gan duoc roi</h1>")
 })
 
 app.use(express.urlencoded({ extended: true }));
