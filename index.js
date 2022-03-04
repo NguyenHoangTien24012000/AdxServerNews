@@ -4,12 +4,6 @@ const initWebRoute = require('./src/routes/index.route')
 const authMiddleWare = require('./src/services/authMiddleWare');
 const userLoginRouter = require('./src/routes/loginIndex.route');
 const adminRouter = require('./src/routes/adminEditAdx');
-const connection = require('./src/services/connectDB')
-const keys = require('./key')
-
-app.get("/", async (req, res) => {
-    return res.send("<h1>ok gan duoc roi</h1>")
-})
 
 app.use(express.urlencoded({ extended: true }));
 
