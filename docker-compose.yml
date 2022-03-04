@@ -4,26 +4,26 @@ services:
     build: .
     ports:
       - "5000:5000"
-    environment:
-      - PORT=5000
     restart: always
-  mysql:
-    image: mysql
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    expose:
+      - 5000
+    environment:
+      - DBUSER=root
+      - DBHOST=root
+      - DBDATABASE=data_adx
+      - DBPASSWORD=root
+      - DBPORT=3306
+    command: npm run devStart
+  mysqldb:
+    image: 'mysql:latest'
     restart: always
     ports:
       - "3307:3306"
+    expose:
+      - 3307
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=data_adx
-    volumes:
-      - mysql:/data/db
-volumes:
-  mysql:
-    drive:local
-  # db:
-  #   image: mysql
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=123456
-  #     - MYSQL_DATABASE=data_adx
-    # env_file:
-    #   - ./.env

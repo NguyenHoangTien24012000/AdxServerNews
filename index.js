@@ -5,11 +5,21 @@ const authMiddleWare = require('./src/services/authMiddleWare');
 const userLoginRouter = require('./src/routes/loginIndex.route');
 const adminRouter = require('./src/routes/adminEditAdx');
 const connection = require('./src/services/connectDB')
+const keys = require('./key')
 
-
-app.get("/", (req,res) =>{
-    console.log(process.env)
-    res.send("<h2>alo 7 21</h2>")
+app.get("/", async (req, res) => {
+    try {
+        console.log(keys)
+        const [rows, fields] = await connection.execute(`SELECT * FROM contact_link`)
+        return res.status(200).json({
+            message: 'ok',
+            data: rows
+        })
+    } catch (error) {
+        return res.status(401).json({
+            message: 'error 1'
+        })
+    }
 })
 
 app.use(express.urlencoded({ extended: true }));
